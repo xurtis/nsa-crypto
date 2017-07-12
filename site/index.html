@@ -17,8 +17,9 @@
       
       var elm_root = document.getElementById("elm");
       var app = Elm.Main.embed(elm_root, {
-        message: params.get("message"),
-        hash: params.get("hash")
+        message: params.get("message") || "Welcome to the NSA Crypto App",
+        hash: params.get("hash") || "306bc2d776d75084774dd451ac9291996640a5c2bb0fa6373edee6e47263f2b3",
+        salt: params.get("salt") || "c428b4ecee2e92c9",
       });
 
       // Hooking the Sha ports
