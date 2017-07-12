@@ -19,7 +19,7 @@ view model =
             [ successPanel model
             , messagePanel model
             , mappingPanel model
-            , statusPanel model
+            -- , statusPanel model
             ]
         ]
 
