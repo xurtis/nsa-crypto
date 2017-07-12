@@ -19,7 +19,7 @@ view model =
             [ successPanel model
             , messagePanel model
             , mappingPanel model
-            -- , panel "Hash" [] [ text model.hash ]
+            , statusPanel model
             ]
         ]
 
@@ -57,7 +57,7 @@ successPanel model =
 -- Bootstrap panel
 panel : String -> List (Attribute Msg) -> List (Html Msg) -> Html Msg
 panel title attr content = 
-    div ([ class "panel", class "panel-default", class "message"] ++ attr)
+    div ([ class "panel", class "panel-default" ] ++ attr)
         [ div [ class "panel-heading" ] [ text title ]
         , div [ class "panel-body"] content
         ]
@@ -117,3 +117,13 @@ charLookup model c =
 charSelected : Model -> Char -> List (Attribute Msg)
 charSelected model c = 
     if (model.selected == c) then [ class "selected" ] else []
+
+-- Show status of hash and salt
+statusPanel : Model -> Html Msg
+statusPanel model = 
+    panel "Status" [] 
+        [ Html.h3 [] [ text "Current Hash" ]
+        , Html.p [ class "decode-text" ] [ text model.hash ]
+        , Html.h3 [] [ text "Salt" ]
+        , Html.p [ class "decode-text" ] [ text model.salt ]
+        ]

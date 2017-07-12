@@ -17,6 +17,8 @@ type alias Flags =
     { message : String
     -- Hash of message
     , hash : String
+    -- Salt for hashing the message
+    , salt : String
     }
 
 -- Model
@@ -29,6 +31,8 @@ type alias Model =
     , message : List String
     -- The hash to match
     , check : String
+    -- Salt for hashing the message
+    , salt : String
     -- The hash of the current decode
     , hash : String
     }
@@ -101,7 +105,13 @@ decode model =
 -- Initial model
 init : Flags -> (Model, Cmd Msg)
 init flags  =
-    ( Model 'A' initMap (flags.message |> String.toUpper |> String.words) flags.hash "" 
+    ( Model 
+        'A' 
+        initMap 
+        (flags.message |> String.toUpper |> String.words) 
+        flags.hash 
+        flags.salt
+        "" 
     , Random.generate GenMask (genMask (Array.fromList alphas) 0)
     )
 
@@ -136,7 +146,7 @@ update msg model =
                     }
             in
                 ( newModel
-                , newModel |> decode |> sha256
+                , newModel |> decode |> (++) newModel.salt |> sha256
                 )
         Hash h ->
             ( { model | hash = h }
