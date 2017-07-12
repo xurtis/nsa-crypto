@@ -1,7 +1,7 @@
 -- Data structures
 module Data exposing (..)
 
-import Sha exposing (..)
+import Crypto exposing (..)
 import Dict exposing (Dict, get)
 import Keyboard
 import Char
@@ -37,54 +37,11 @@ type alias Model =
     , hash : String
     }
 
--- Alphabetical characters
-alphas = String.toList (String.toUpper "abcdefghijklmnopqrstuvwxyz")
-numAlphas = List.length alphas
-
-swapLetters : Array Char -> Int -> Int -> Array Char
-swapLetters chars a b =
-    let
-        letterA = Array.get a chars |> Maybe.withDefault '?'
-        letterB = Array.get b chars |> Maybe.withDefault '?'
-    in
-        chars |> Array.set a letterB |> Array.set b letterA
-
--- String shuffling generator
-genMask : Array Char -> Int -> Generator (Array Char, Int)
-genMask mask next = 
-    let 
-        alphaInt = Random.int 0 (numAlphas - 1)
-        fromInt i =
-            ( swapLetters mask next i
-            , next + 1
-            )
-    in
-        Random.map fromInt alphaInt 
-
--- Apply a substitution on the message
-substitute : List Char -> String -> String
-substitute mask text =
-    let
-        zip a b =
-            case (List.head a) of
-                Nothing -> []
-                Just a_head ->
-                    case (List.head b) of
-                        Nothing -> []
-                        Just b_head -> 
-                            (a_head, b_head) :: zip 
-                                (Maybe.withDefault [] (List.tail a))
-                                (Maybe.withDefault [] (List.tail b))
-        maskDict = zip alphas mask |> Dict.fromList
-        subChar c = Dict.get c maskDict |> Maybe.withDefault c
-    in
-        map subChar (String.toList text) |> String.fromList
-
-messageSubstitute : Array Char -> List String -> List String
-messageSubstitute mask message =
+messageSubstitute : MaskStep -> List String -> List String
+messageSubstitute step message =
     message
     |> String.join " "
-    |> substitute (Array.toList mask)
+    |> substitute step
     |> String.words
 
 
@@ -112,7 +69,7 @@ init flags  =
         flags.hash 
         flags.salt
         "" 
-    , Random.generate GenMask (genMask (Array.fromList alphas) 0)
+    , newMask GenMask
     )
 
 -- Initial Map
@@ -152,11 +109,10 @@ update msg model =
             ( { model | hash = h }
             , Cmd.none
             )
-        GenMask (mask, next) ->
-            if (next >= numAlphas) then
-                ({ model | message = messageSubstitute mask model.message}, Cmd.none)
-            else 
-                (model, Random.generate GenMask (genMask mask next))
+        GenMask step ->
+            ( { model | message = messageSubstitute step model.message}
+            , stepMask GenMask step 
+            )
 
 -- Get a hash of the current decode
 decodeCheck : Model -> Cmd Msg
@@ -178,6 +134,6 @@ subscriptions msg =
     in
         Sub.batch
             [ Keyboard.presses pressMessage
-            , Sha.sha_result Hash
+            , Crypto.sha_result Hash
             ]
 
