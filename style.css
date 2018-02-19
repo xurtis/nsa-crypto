@@ -1,0 +1,34 @@
+.message .panel-body {
+  font-family: monospace;
+  font-size: 1.6em;
+}
+
+.message .word {
+  display: inline-block;
+  float: left;
+  margin: 0 0.5em;
+}
+
+.message .letter {
+  display: inline-block;
+  float: left;
+}
+
+.message .letter.selected {
+  font-weight: bold;
+  color: #E7E7E7;
+}
+
+.mapping .panel-body {
+  font-family: monospace;
+  font-size: 0.8em;
+}
+
+.mapping .input-group {
+  margin: 0.4em 0;
+}
+
+.decode-text {
+  font-family: monospace;
+  font-size: 1.2em;
+}

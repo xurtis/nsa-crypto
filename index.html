@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>NSA App</title>
+
+    <link rel="stylesheet" href="bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <div id="elm"></div>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="sha.js"></script>
+    <script type="text/javascript">
+      var params = new URL(document.location).searchParams;
+      
+      var elm_root = document.getElementById("elm");
+      var app = Elm.Main.embed(elm_root, {
+        message: params.get("message") || "Welcome to the NSA Crypto App",
+        hash: params.get("hash") || "306bc2d776d75084774dd451ac9291996640a5c2bb0fa6373edee6e47263f2b3",
+        salt: params.get("salt") || "c428b4ecee2e92c9",
+      });
+
+      // Hooking the Sha ports
+      app.ports.sha256.subscribe(function (text) {
+        var sha = new jsSHA("SHA-256", "TEXT");
+        // console.log(text);
+        sha.update(text);
+				var hash = sha.getHash("HEX");
+				// console.log(hash);
+        app.ports.sha_result.send(hash);
+      })
+    </script>
+  </body>
+</html>
