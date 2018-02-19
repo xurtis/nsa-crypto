@@ -7,8 +7,7 @@ from string import maketrans, ascii_uppercase
 from random import shuffle
 from copy import copy
 
-project_dir = "file://" + path.realpath(path.dirname(__file__))
-site_path = project_dir + "/site/index.html"
+site_path = "http://xurtis.pw/nsa-crypto/"
 
 first_shuffle = list(ascii_uppercase)
 shuffle(first_shuffle)
@@ -26,5 +25,5 @@ options = urlencode(dict(
     salt=salt,
 ))
 
-print "Local: {}?{}".format(site_path, options)
+print "Demo: {}?{}".format(site_path, options)
 print "Options: {}".format(options)
