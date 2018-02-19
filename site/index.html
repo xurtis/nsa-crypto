@@ -25,9 +25,11 @@
       // Hooking the Sha ports
       app.ports.sha256.subscribe(function (text) {
         var sha = new jsSHA("SHA-256", "TEXT");
-        console.log(text);
+        // console.log(text);
         sha.update(text);
-        app.ports.sha_result.send(sha.getHash("HEX"));
+				var hash = sha.getHash("HEX");
+				// console.log(hash);
+        app.ports.sha_result.send(hash);
       })
     </script>
   </body>

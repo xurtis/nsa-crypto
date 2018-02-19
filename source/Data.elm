@@ -133,7 +133,7 @@ subscriptions msg =
                     SetMap '-'
     in
         Sub.batch
-            [ Keyboard.presses pressMessage
+            [ Keyboard.ups pressMessage
             , Crypto.sha_result Hash
             ]
 
