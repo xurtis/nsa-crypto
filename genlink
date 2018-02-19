@@ -1,0 +1,30 @@
+#!/usr/bin/env python2
+
+from hashlib import sha256
+from os import urandom, path
+from urllib import urlencode
+from string import maketrans, ascii_uppercase
+from random import shuffle
+from copy import copy
+
+project_dir = "file://" + path.realpath(path.dirname(__file__))
+site_path = project_dir + "/site/index.html"
+
+first_shuffle = list(ascii_uppercase)
+shuffle(first_shuffle)
+first_mapping = maketrans(ascii_uppercase, ''.join(first_shuffle))
+
+message = raw_input("Enter the message to encrypt: ")
+message = message.upper()
+translated = message.translate(first_mapping)
+salt = urandom(8).encode('hex')
+msg_hash = sha256(salt + message).hexdigest()
+
+options = urlencode(dict(
+    message=translated,
+    hash=msg_hash,
+    salt=salt,
+))
+
+print "Local: {}?{}".format(site_path, options)
+print "Options: {}".format(options)
